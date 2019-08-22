@@ -9,16 +9,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * @author Pradeep Jindal
  * Created by pjind5 on 04-Jul-17.
  */
 public class LruCache<K,V> extends LinkedHashMap<K,V> implements Cache<K,V> {
 
     private volatile boolean cacheEnabled = false;
-    private ReentrantLock modificationLock;
-    private AtomicInteger cacheHit;
-    private AtomicInteger cacheMiss;
-
-    private int maxSize;
+    private final ReentrantLock modificationLock;
+    private final AtomicInteger cacheHit;
+    private final AtomicInteger cacheMiss;
+    private final int           maxSize;
 
     public LruCache() {
         this(Integer.MAX_VALUE);
@@ -109,7 +109,7 @@ public class LruCache<K,V> extends LinkedHashMap<K,V> implements Cache<K,V> {
     }
 
     @Override
-    public Float getCasheHitMissRatio() {
+    public Float getCacheHitMissRatio() {
         float hit = cacheHit.get();
         float total = cacheHit.get() + cacheMiss.get();
         float ratio = hit/total;

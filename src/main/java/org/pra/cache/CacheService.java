@@ -5,6 +5,7 @@ import org.pra.cache.impl.ProxyCache;
 import java.util.Map;
 
 /**
+ * @author Pradeep Jindal
  * Created by pjind5 on 05-Jul-17.
  */
 public class CacheService<K,V> implements Cache<K,V> {
@@ -54,7 +55,7 @@ public class CacheService<K,V> implements Cache<K,V> {
     @Override
     public void close() {
         cache.close();
-        cache = new ProxyCache<K, V>(cache);
+        cache = new ProxyCache<>(cache);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class CacheService<K,V> implements Cache<K,V> {
     }
 
     @Override
-    public Float getCasheHitMissRatio() {
-        return cache.getCasheHitMissRatio();
+    public Float getCacheHitMissRatio() {
+        return cache.getCacheHitMissRatio();
     }
 }

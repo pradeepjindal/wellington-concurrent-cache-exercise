@@ -9,16 +9,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * @author Pradeep Jindal
  * Created by pjind5 on 04-Jul-17.
  */
 public class TimedCache<K,V> extends ConcurrentHashMap<K,TimedCache.Wrapper<V>> implements Cache<K,V> {
 
     private volatile boolean cacheEnabled = false;
-    private AtomicInteger cacheHit;
-    private AtomicInteger cacheMiss;
-
-    private long   evictAfterMilliSeconds;
-    private Thread cacheEvictingThread;
+    private final AtomicInteger cacheHit;
+    private final AtomicInteger cacheMiss;
+    private final long          evictAfterMilliSeconds;
 
 
     public TimedCache() {
@@ -31,6 +30,7 @@ public class TimedCache<K,V> extends ConcurrentHashMap<K,TimedCache.Wrapper<V>> 
         cacheHit = new AtomicInteger();
         cacheMiss = new AtomicInteger();
 
+        Thread cacheEvictingThread;
         this.evictAfterMilliSeconds = evictAfterMilliSeconds;
         cacheEvictingThread = new Thread(new CacheEviction());
         cacheEvictingThread.setDaemon(true);
@@ -57,15 +57,13 @@ public class TimedCache<K,V> extends ConcurrentHashMap<K,TimedCache.Wrapper<V>> 
 
     @Override
     public void putItem(K key, V value) {
-        Wrapper<V> wrapper = new Wrapper<V>(value);
+        Wrapper<V> wrapper = new Wrapper<>(value);
         put(key, wrapper);
     }
 
     @Override
     public void putAllItems(Map<K, V> map) {
-        map.forEach( (key, value) -> {
-            putItem(key, value);
-        });
+        map.forEach(this::putItem);
     }
 
     @Override
@@ -105,7 +103,7 @@ public class TimedCache<K,V> extends ConcurrentHashMap<K,TimedCache.Wrapper<V>> 
     }
 
     @Override
-    public Float getCasheHitMissRatio() {
+    public Float getCacheHitMissRatio() {
         float hit = cacheHit.get();
         float total = cacheHit.get() + cacheMiss.get();
         float ratio = hit/total;
@@ -122,7 +120,7 @@ public class TimedCache<K,V> extends ConcurrentHashMap<K,TimedCache.Wrapper<V>> 
                     //System.out.println( " chm going to sleep ");
                     Thread.sleep(evictAfterMilliSeconds);
                     evict();
-                    //System.out.println( " rerurning from evict ");
+                    //System.out.println( " rerunning from evict ");
                 } catch (InterruptedException ie) {
                     //log
                 }
@@ -146,20 +144,20 @@ public class TimedCache<K,V> extends ConcurrentHashMap<K,TimedCache.Wrapper<V>> 
         }
     }
 
-    public static class Wrapper<V> {
+    static class Wrapper<V> {
         V userObject;
         long lastTime;
 
         Wrapper(V value) {
             this.userObject = value;
-            lastTime = System.currentTimeMillis();
+            this.lastTime = System.currentTimeMillis();
         }
 
-        public V getUserObject() {
+        V getUserObject() {
             return userObject;
         }
 
-        public long getLastTime() {
+        long getLastTime() {
             return lastTime;
         }
         public void setLastTime(long lastTime) {

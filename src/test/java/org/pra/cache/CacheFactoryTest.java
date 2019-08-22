@@ -10,6 +10,7 @@ import java.util.Random;
 import static org.junit.Assert.*;
 
 /**
+ * @author Pradeep Jindal
  * Created by pjind5 on 05-Jul-17.
  */
 public class CacheFactoryTest {
@@ -31,9 +32,9 @@ public class CacheFactoryTest {
         //
         cache.close();
         assertTrue(cache.isClosed());
-        assertTrue(cache.getHitCount() == 1);
-        assertTrue(cache.getMissCount() == 2);
-        assertTrue(cache.getCasheHitMissRatio().equals(new Float(0.33)));
+        assertEquals(1, (int) cache.getHitCount());
+        assertEquals(2, (int) cache.getMissCount());
+        assertEquals(0.33f, cache.getCacheHitMissRatio(), 0.0);
         //
         exception.expect(IllegalStateCacheException.class);
         cache.putItem(key, value);
@@ -53,9 +54,9 @@ public class CacheFactoryTest {
         //
         cache.close();
         assertTrue(cache.isClosed());
-        assertTrue(cache.getHitCount() == 1);
-        assertTrue(cache.getMissCount() == 2);
-        assertTrue(cache.getCasheHitMissRatio().equals(new Float(0.33)));
+        assertEquals(1, (int) cache.getHitCount());
+        assertEquals(2, (int) cache.getMissCount());
+        assertEquals(0.33f, cache.getCacheHitMissRatio(), 0.0);
         //
         exception.expect(IllegalStateCacheException.class);
         cache.putItem(key, value);

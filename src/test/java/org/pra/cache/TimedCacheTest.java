@@ -8,6 +8,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 /**
+ * @author Pradeep Jindal
  * Created by pjind5 on 04-Jul-17.
  */
 public class TimedCacheTest {
@@ -38,9 +39,9 @@ public class TimedCacheTest {
         String value2 = Integer.toString(new Random().nextInt());
 
         Cache<String, String> cache = new TimedCache<>(1000);
-        assertTrue("initially size should be zero", cache.getSize() == 0);
+        assertEquals("initially size should be zero", 0, (int) cache.getSize());
         cache.putItem(key, value);
-        assertTrue("now size should be one", cache.getSize() == 1);
+        assertEquals("now size should be one", 1, (int) cache.getSize());
         try {
             //System.out.println( " test going to sleep ");
             Thread.sleep(3000);
@@ -48,10 +49,10 @@ public class TimedCacheTest {
         } catch (InterruptedException e) {
             //
         }
-        assertTrue("cache should have been evicted", cache.getSize() == 0);
+        assertEquals("cache should have been evicted", 0, (int) cache.getSize());
         //
         cache.putItem(key, value);
-        assertTrue("size should remain one", cache.getSize() == 1);
+        assertEquals("size should remain one", 1, (int) cache.getSize());
         try {
             //System.out.println( " test going to sleep ");
             Thread.sleep(700);
@@ -60,7 +61,7 @@ public class TimedCacheTest {
             //
         }
         cache.putItem(key2, value2);
-        assertTrue("size should remain one", cache.getSize() == 2);
+        assertEquals("size should remain one", 2, (int) cache.getSize());
         try {
             //System.out.println( " test going to sleep ");
             Thread.sleep(500);
@@ -68,7 +69,7 @@ public class TimedCacheTest {
         } catch (InterruptedException e) {
             //
         }
-        assertTrue("size should remain one", cache.getSize() == 1);
+        assertEquals("size should remain one", 1, (int) cache.getSize());
     }
 
     @Test
@@ -124,7 +125,7 @@ public class TimedCacheTest {
         assertEquals("object should be retrieved", value, cache.getItem(keyClass));
         assertNull("object should not be found", cache.getItem(keyClass2));
 
-        // replaceing value for same key
+        // replacing value for same key
         cache.putItem(keyClass, value2);
         assertNotEquals("object should not match", value, cache.getItem(keyClass2));
         assertEquals("object should match", value2, cache.getItem(keyClass));
@@ -177,25 +178,25 @@ public class TimedCacheTest {
         cache.putItem(keyClass, valueClass);
         assertEquals("object should be retrieved", valueClass, cache.getItem(keyClass));
         assertNull("object should not be found", cache.getItem(keyClass2));
-        assertTrue("size should be one", cache.getSize() == 1);
+        assertEquals("size should be one", 1, (int) cache.getSize());
 
         cache.putItem(keyClass2, valueClass2);
-        assertTrue("size should be two", cache.getSize() == 2);
+        assertEquals("size should be two", 2, (int) cache.getSize());
         assertEquals("retrieved object should match", valueClass, cache.getItem(keyClass));
         assertEquals("retrieved object should match", valueClass2, cache.getItem(keyClass2));
 
         cache.removeItem(keyClass);
-        assertTrue("size should be one", cache.getSize() == 1);
-        assertNull("key shound not be present", cache.getItem(keyClass));
+        assertEquals("size should be one", 1, (int) cache.getSize());
+        assertNull("key should not be present", cache.getItem(keyClass));
         assertEquals("retrieved object should match", valueClass2, cache.getItem(keyClass2));
 
         cache.removeItem(keyClass2);
-        assertTrue("size should be zero", cache.getSize() == 0);
+        assertEquals("size should be zero", 0, (int) cache.getSize());
     }
 
     private class FixedHashKeyClass {
-        String key;
-        int hash;
+        final String key;
+        final int hash;
 
         FixedHashKeyClass(String key, int hash) {
             this.key = key;
@@ -210,7 +211,7 @@ public class TimedCacheTest {
             FixedHashKeyClass that = (FixedHashKeyClass) o;
 
             if (hash != that.hash) return false;
-            return key != null ? key.equals(that.key) : that.key == null;
+            return Objects.equals(key, that.key);
         }
 
         @Override
@@ -220,8 +221,8 @@ public class TimedCacheTest {
     }
 
     private class KeyClass {
-        String name;
-        int age;
+        final String name;
+        final int age;
 
         KeyClass(String name, int age) {
             this.name = name;
@@ -236,7 +237,7 @@ public class TimedCacheTest {
             KeyClass keyClass = (KeyClass) o;
 
             if (age != keyClass.age) return false;
-            return name == null ? keyClass.name == null : name.equals(keyClass.name) ;
+            return Objects.equals(name, keyClass.name);
         }
 
         @Override
@@ -248,8 +249,8 @@ public class TimedCacheTest {
     }
 
     private class ValueClass {
-        String valueString;
-        int valueInteger;
+        final String valueString;
+        final int valueInteger;
 
         ValueClass(String valueString, int valueInteger) {
             this.valueString = valueString;
@@ -264,7 +265,7 @@ public class TimedCacheTest {
             ValueClass that = (ValueClass) o;
 
             if (valueInteger != that.valueInteger) return false;
-            return valueString != null ? valueString.equals(that.valueString) : that.valueString == null;
+            return Objects.equals(valueString, that.valueString);
         }
 
         @Override
